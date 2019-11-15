@@ -1,13 +1,25 @@
 # Hướng dẫn cài đặt osquery, kolide fleet
 
 ## Mô hình
+
+
 ## IP Planning
+
+```
+GraylogSrv		: CentOS 7				: Graylog
+KolideFleetSrv 	: CentOS 7 				: KolideFleet  
+OsqueryClient1 	: CentOS 7  			: osquery 4.0.2
+OsqueryClient2 	: ubuntu 18.04 			: osquery 4.0.2
+OsqueryClient3	: CentOS 6 				: osquery 4.0.2
+OsqueryClient4	: Windows server 2012	: osquery 4.0.2
+```
+
 
 # Bước cài đặt
 
 ## Thiết lập IP, hostname và các môi trường khác
 
-- Đặt IP tĩnh cho máy cài Osquery
+- Đặt IP tĩnh cho máy cài osquery theo IP Planning.
 
 ```
 
@@ -21,8 +33,7 @@
 yum update -y && yum install yum-utils wget byobu -y
 ```
 
-
-## Cài đặt và cấu hình osquery
+## Cài đặt và cấu hình osquery trên `OsqueryClient1`
 
 - Thực hiện cài đặt osquery
 
@@ -38,10 +49,12 @@ cp /usr/share/osquery/osquery.example.conf /etc/osquery/osquery.conf
 
 
 
-## Cài đặt kolide fleet
+## Cài đặt kolide fleet trên server `KolideFleetSrv`
 
 - Kolid fleet yêu cầu các phần mềm bổ trợ, trong bước này cần cài đặt chúng trước khi cài đặt kolide fleet.
-- Thực hiện cài đặt mysql
+
+
+### Thực hiện cài đặt mysql
 
 ```
 wget https://repo.mysql.com/mysql80-community-release-el7-3.noarch.rpm
@@ -76,6 +89,20 @@ exit
 
 - Trong hướng dẫn trên, tôi đã thiết lập mật khẩu cho tài khoản `root` là `Welcome123+`.
 
+
+### Cài đặt redis
+
+- Thực hiện cài đặt redis
+
+```
+wget http://download.redis.io/redis-stable.tar.gz
+yum install -y gcc g++
+tar -zxvf redis-stable.tar.gz && cd redis-stable
+make && make install
+cp redis.conf /etc/redis.conf
+sed -i 's/daemonize no/daemonize yes/' /etc/redis.conf
+redis-server /etc/redis.conf
+```
 
 
 
