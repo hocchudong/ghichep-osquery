@@ -1,39 +1,44 @@
 # Hướng dẫn cài đặt osquery, kolide fleet
 
-## Mô hình
+## 1. Mô hình
+
+Mô hình triển khai hệ thống osquery và công cụ quản lý kolide fleet
+
+![OSquery topo](https://image.prntscr.com/image/1KLf7ZviQKqRamkP_WJXBw.png)
+
+## 2. IP Planning
+
+IP Planning cho các máy 
+
+![OSquery IP Planning](https://image.prntscr.com/image/QxiNdFXUSyepHmrWirY09A.png)
 
 
-## IP Planning
+## 3. Thực hiện cài đặt trên các node client
 
-```
-GraylogSrv		: CentOS 7				: Graylog
-KolideFleetSrv 	: CentOS 7 				: KolideFleet  
-OsqueryClient1 	: CentOS 7  			: osquery 4.0.2
-OsqueryClient2 	: ubuntu 18.04 			: osquery 4.0.2
-OsqueryClient3	: CentOS 6 				: osquery 4.0.2
-OsqueryClient4	: Windows server 2012	: osquery 4.0.2
-```
+### 3.1. Cài đặt trên `OsqueryClient1`
 
+#### 3.1.1 Chuẩn bị cài đặt trên `OsqueryClient1`
 
-# Bước cài đặt
-
-## Thiết lập IP, hostname và các môi trường khác
-
-- Đặt IP tĩnh cho máy cài osquery theo IP Planning.
-
-```
-
-```
-
-## Cài đặt các gói bổ trợ
-
-- Cập nhật OS và cài đặt các gói bổ trợ.
-
+- Thực hiện cập nhật os và cài các gói bổ trợ.
 ```
 yum update -y && yum install yum-utils wget byobu -y
 ```
 
-## Cài đặt và cấu hình osquery trên `OsqueryClient1`
+- Thiết lập hostname 
+
+```
+hostnamectl set-hostname osqueryclient01
+bash 
+```
+
+```
+echo "127.0.0.1 localhost osqueryclient01" > /etc/hosts
+echo "192.168.80.142 osqueryclient01" >> /etc/hosts
+```
+- Thiết lập IP
+
+
+#### 3.1.2. Cài đặt và cấu hình osquery trên `OsqueryClient1`
 
 - Thực hiện cài đặt osquery
 
@@ -45,11 +50,35 @@ yum install osquery -y
 cp /usr/share/osquery/osquery.example.conf /etc/osquery/osquery.conf
 ```
 
-- Cấu hình osquery để lập lịch thu thập dữ liệu
+Sửa cấu hình của file `/etc/osquery/osquery.conf` 
 
+- Thay dòng 
 
+```
+//"logger_path": "/var/log/osquery",
+``` 
 
-## Cài đặt kolide fleet trên server `KolideFleetSrv`
+- thành dòng 
+
+```
+"logger_path": "/var/log/osquery",
+```
+
+- Tìm dòng `"schedule": {` thêm đoạn cấu hình sau ngay bên dưới.
+
+```
+// for example, get CPU Time per 60 seconds
+    "cpu_time": {
+      "query": "SELECT * FROM cpu_time;",
+      "interval": 60
+    },
+```
+
+Mục tiêu của đoạn cấu hình trên là để lập lịch cho osquery thực hiện các câu truy vấn về dữ liệu ta muốn thu thập và ghi vào file log trong thư mục `/var/log/osquery`. Đoạn sửa có hình tương tự ảnh dưới
+
+![cấu hình schedule](https://image.prntscr.com/image/JJ04vQvlS12yiec4_HcQLw.png)
+
+## 5. Cài đặt kolide fleet trên server `KolideFleetSrv`
 
 - Kolid fleet yêu cầu các phần mềm bổ trợ, trong bước này cần cài đặt chúng trước khi cài đặt kolide fleet.
 
