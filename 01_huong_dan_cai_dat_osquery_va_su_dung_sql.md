@@ -213,4 +213,36 @@ Chuyển sang bước dưới để thực hiện các câu truy vấn cơ bản
 ## 3. Hướng dẫn sử dụng các câu truy vấn cơ bản của osquery.
 
 - Thực hiện đăng nhập vào osquery với lệnh `osqueryi`, a sẽ ở màn hình nhắc lệnh.
-- Lưu ý: Để thoát màn hình sql của osquery, ta thực hiện phím `CTL +D`
+- Lưu ý: Để thoát màn hình sql của osquery, ta thực hiện phím `CTL +D`.
+- Nếu bạn từng làm việc với các ngôn ngữ SQL của SQLite MySQL, MariaDB hoặc MS SQL ... thì việc thao thác này khá đơn giản, các kết quả sẽ là các giá trị của cột (colum) hoặc hàng (row) của các bảng (tables).
+- Schema (Cấu trúc các bảng) của osquery được mô tả tại đây: `https://osquery.io/schema/4.0.2`
+- Kết thúc các lệnh của sql là dấu `;`.
+
+Trong các ghi chép dưới đây, tôi sẽ hướng dẫn thao tác với một số bản cơ bản.
+
+### 3.1. Kiểm tra uptime của hệ thống
+
+- Sử dụng `select * from uptime;` để kiểm tra uptime của hệ thống, ta có kết quả
+    ```
+    osquery> select * from uptime;
+    +------+-------+---------+---------+---------------+
+    | days | hours | minutes | seconds | total_seconds |
+    +------+-------+---------+---------+---------------+
+    | 0    | 2     | 13      | 5       | 7985          |
+    +------+-------+---------+---------+---------------+
+    ```
+
+
+### 3.2. Bảng user
+
+- Kiểm tra danh sách các user trong hệ thống 
+
+
+```
+select * from users;
+```
+
+- Kết quả sẽ trả về danh sách các user
+
+![User](https://image.prntscr.com/image/koBjDnFBTtWlPPv2pu6YZQ.png)
+
