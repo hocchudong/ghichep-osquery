@@ -32,9 +32,10 @@ bash
 ```
 
 ```
-echo "127.0.0.1 localhost osqueryclient01" > /etc/hosts
 echo "192.168.80.142 osqueryclient01" >> /etc/hosts
+echo "127.0.0.1 localhost osqueryclient01" > /etc/hosts
 ```
+
 - Thiết lập IP
 
 
@@ -85,6 +86,7 @@ Mục tiêu của đoạn cấu hình trên là để lập lịch cho osquery t
 
 #### 4.1.1. Cấu hình cơ bản cho KolideFleetSrv
 
+- Thao tác trên node `KolideFleetSrv`
 - Thực hiện cập nhật os và cài các gói bổ trợ.
 ```
 yum update -y && yum install yum-utils wget byobu unzip -y
@@ -94,65 +96,60 @@ yum update -y && yum install yum-utils wget byobu unzip -y
 
 - Thiết lập hostname 
 
-```
-hostnamectl set-hostname KolideFleetSrv
-bash 
-```
+    ```
+    hostnamectl set-hostname KolideFleetSrv
+    bash 
+    ```
 
-```
-echo "127.0.0.1 localhost KolideFleetSrv" > /etc/hosts
-echo "192.168.80.141 KolideFleetSrv" >> /etc/hosts
-```
+    ```
+    echo "192.168.80.141 KolideFleetSrv" >> /etc/hosts
+        echo "127.0.0.1 localhost KolideFleetSrv" > /etc/hosts
+
+    ```
 
 - Khởi động lại os 
 
-```
-init 6
-```
+    ```
+    init 6
+    ```
 
 
 #### 4.1.2. Thực hiện cài đặt mysql
 - Kolid fleet yêu cầu các phần mềm bổ trợ, trong bước này cần cài đặt chúng trước khi cài đặt kolide fleet.
+    ```
+    wget https://repo.mysql.com/mysql80-community-release-el7-3.noarch.rpm
+    rpm -ivh mysql80-community-release-el7-3.noarch.rpm
+    yum update -y 
 
-
-```
-wget https://repo.mysql.com/mysql80-community-release-el7-3.noarch.rpm
-rpm -ivh mysql80-community-release-el7-3.noarch.rpm
-yum update -y 
-
-yum install -y mysql-community-server.x86_64 mysql-community-client.x86_64 -y
-```
+    yum install -y mysql-community-server.x86_64 mysql-community-client.x86_64 -y
+    ```
 
 - Khởi động mysql 8.0
-
-```
-systemctl start mysqld
-systemctl enable mysqld
-
-```
+    ```
+    systemctl start mysqld
+    systemctl enable mysqld
+    ```
 
 - Đối với bản mysql 8.0, sau khi khởi động ta kiểm tra file log của mysql 8.0 xem mật khẩu được sinh ngẫu nhiên à gì.
-```
-cat /var/log/mysqld.log    
-```
+    ```
+    cat /var/log/mysqld.log    
+    ```
 
 - Ta có mật khẩu sinh ngẫu nhiên.
 ![Mật khẩu mysql](https://image.prntscr.com/image/ercAYtvHRNywDptycAq3DQ.png)
 
 - Dùng mật khẩu này để đăng nhập vào mysql khi được hỏi ở lệnh dưới
-
-```
-mysql -u root -p
-```
+    ```
+    mysql -u root -p
+    ```
 
 - Sau khi đăng nhập được mysql, ta tiến hành tạo mật khẩu và database để chuẩn bị cài kolide. Lưu ý mật khẩu cần đủ độ phức tạp, bao gồm ký tự hoa, ký tự thường, ký tự số và ký tự đặc biệt.
-
-```
-alter user "root"@"localhost" identified by "Welcome123+";   
-flush privileges;
-create database kolide;
-exit
-```
+    ```
+    alter user "root"@"localhost" identified by "Welcome123+";   
+    flush privileges;
+    create database kolide;
+    exit
+    ```
 
 - Trong hướng dẫn trên, tôi đã thiết lập mật khẩu cho tài khoản `root` là `Welcome123+`. Lưu ý dùng mật khẩu này ở bước dưới.
 
@@ -328,7 +325,90 @@ Truy cập vào địa chỉ https://192.168.80.141:8080 và nhập đầy đủ
 Ta sẽ chuyển sang bước add các client cài đặt osquery
 
 
+### 4.2. Thực hiện khai báo các osquery client.
+
+#### 4.2.1. Lấy file `Osquery Enroll Secret` và `Fleet Certificate`
+
+- Lựa chọn tab `ADD HOST` trên giao diện
+
+![add host](https://image.prntscr.com/image/6S-5XsTuQXWMfbQCwJeFEQ.png)
 
 
+- Lựa chọn biểu tượng copy chuỗi `Enroll Secret` và lưu lại để dùng cho bước tiếp.
 
+![add host](https://image.prntscr.com/image/kUoNg7gcS9SPhxxFvhl-3w.png)
+
+
+- Lựa chọn biểu tượng certificate để lấy file key. File này sẽ được dùng để copy vào thư mục quy định của các máy client.
+
+![add host](https://image.prntscr.com/image/zcYxtUhLTemXMa_Ti3FlTQ.png)
+
+Tới đây đã hoàn thành các bước để có file key và chuỗi `Enroll Secret`. Chuyển sang node client để thực hiện các bước tiếp theo.
+
+#### 4.2.2 Thực hiện khai báo key, chuỗi Enroll Secret trên client
+
+- SSH với quyền `root` vào trong máy client và thực hiện các khai báo trước khi được add lên Kolide fleet server.
+
+- Lưu ý: Đối với hướng dẫn này, trước mắt cần thực hiện stop `osqueryd`, thực hiện bằng lệnh.
+    ```
+    systemctl stop osqueryd
+    ```
+
+- Ta kiểm tra lại trạng thái bằng lệnh dưới.
+     ```
+    systemctl status osqueryd
+    ```
+
+- Thực hiện khai báo chuỗi `Enroll Secret`
+    ```
+    echo '4WPAs52IOFJc8dPzyRqeLbHDx9rz38dC' > /var/osquery/enroll_secret 
+    ```
+
+- Copy file key lên thư mục /root/ của osqueryclient. Tên file trong hướng dẫn này là `192.168.80.141_8080.pem`
+
+![add host](https://image.prntscr.com/image/Z7eypW_xQkiuaqJyxZ-CHA.png)
+
+
+- Di chuyển file pem vào trong thư mục quy định
+
+```
+mv 192.168.80.141_8080.pem /var/osquery/server.pem
+```
+
+- Thực kiện kết nối client tới kolide fleet. Lưu ý khai báo IP của kolide fleet. Tại bước này ta có thể sử dụng `byobu` để truy trì phiên làm việc của osquery bởi vì chúng ta đang trong chế độ tương tác lệnh, nếu không dùng byobu khi tắt màn hình sẽ bị mất phiên.
+
+```
+byobu
+```
+
+- Kết nối osquery client với server fleet
+
+```
+/usr/bin/osqueryd \
+    --enroll_secret_path=/var/osquery/enroll_secret \
+    --tls_server_certs=/var/osquery/server.pem \
+    --tls_hostname=192.168.80.141:8080 \
+    --host_identifier=hostname \
+    --enroll_tls_endpoint=/api/v1/osquery/enroll \
+    --config_plugin=tls \
+    --config_tls_endpoint=/api/v1/osquery/config \
+    --config_tls_refresh=10 \
+    --disable_distributed=false \
+    --distributed_plugin=tls \
+    --distributed_interval=3 \
+    --distributed_tls_max_attempts=3 \
+    --distributed_tls_read_endpoint=/api/v1/osquery/distributed/read \
+    --distributed_tls_write_endpoint=/api/v1/osquery/distributed/write \
+    --logger_plugin=tls \
+    --logger_tls_endpoint=/api/v1/osquery/log \
+    --logger_tls_period=10
+```
+
+- Mở giao diện web của máy KolideFleetSrv ta sẽ thấy xuất hiện osquery client như hình ảnh dưới.
+
+![osqueryclient](https://image.prntscr.com/image/I4SK2nZGQzW9R7-8lKxKxw.png)
+
+Việc add thêm các client khác sẽ lặp lại tương tự như bước trên. 
+
+- Từ giao diện này ta có thể thực hiện các câu query. Sau hướng dẫn này các bạn sẽ chuyển sang các bước sử dụng giao diện của fleet.
 
