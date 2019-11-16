@@ -55,11 +55,6 @@
 
 Tiếp theo, trong hướng dẫn này sẽ tiến hành sửa một số cấu hình cơ bản của osquery trước khi start.
 
-- Có thể tạo ra file cấu hình từ đầu hoặc lấy từ file mẫu theo bước dưới thông qua lệnh `cp`
-
-```
-cp 
-
 - File cấu hình của osquery sẽ nằm tại file `/var/osquery/osquery.conf`. File này có định dạng json theo cấu trúc
 
 ```
@@ -84,6 +79,7 @@ cp
      // Và các khai báo khác.
 
 }
+```
 
 - Cú pháp của file khai báo trên như sau:
   - Dòng bắt đầu là ký tự `//` là dòng commend, không có tác dụng khi osquery được khởi động.
