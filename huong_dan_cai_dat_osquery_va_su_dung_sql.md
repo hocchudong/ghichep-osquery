@@ -36,7 +36,7 @@
     init 6
     ````
 
-#### 2.1.2. Cài đặt osquery
+### 2.2. Cài đặt osquery
 
 - Thực hiện cài đặt osquery
     ```
@@ -165,3 +165,52 @@ Mở file `/etc/osquery/osquery.conf` và sửa các dòng dưới:
     Using a virtual database. Need help, type '.help'
     osquery>
     ```
+
+- Thử chạy câu lệnh truy vấn về hệ điều hành.
+    ```
+    select * from os_version; 
+    ```
+- Kết quả trả về là:
+
+    ```
+    osquery> select * from os_version;
+    +--------------+--------------------------------------+-------+-------+-------+-------+----------+---------------+----------+
+    | name         | version                              | major | minor | patch | build | platform | platform_like | codename |
+    +--------------+--------------------------------------+-------+-------+-------+-------+----------+---------------+----------+
+    | CentOS Linux | CentOS Linux release 7.7.1908 (Core) | 7     | 7     | 1908  |       | rhel     | rhel          |          |
+    +--------------+--------------------------------------+-------+-------+-------+-------+----------+---------------+----------+
+    ```
+
+Có thể chạy một số câu lệnh khách như:
+
+- Lấy ra các giá trị về tham số của cpu (tương tự một phần lệnh top)
+    ```
+    select * from cpu_time;
+    ```
+
+- Lệnh lấy các các thông số về hostname, loại cpu, loại phần cứng:
+    ```
+    select hostname, cpu_brand, hardware_vendor, hardware_model from system_info; 
+    ```
+
+Để thoát màn hình sql của osquery, ta thực hiện phím `CTL +D`
+ 
+ - Sử dụng lệnh `tailf` hoặc `tail -f` để theo dõi nội dung file lưu log của các câu truy vấn được khai báo ở tùy chọn `shedule` 
+
+ ```
+ tailf /var/log/osquery/osqueryd.results.log
+ ```
+
+ - Ta có kết quả như sau
+
+    ```
+    {"name":"cpu_time","hostIdentifier":"osqueryclient","calendarTime":"Sat Nov 16 00:52:34 2019 UTC","unixTime":1573865554,"epoch":0,"counter":9,"logNumericsAsNumbers":false,"decorations":{"host_uuid":"95B2A9C0-785F-2B8A-EF22-ECFA7C04E745","username":"reboot"},"columns":{"core":"0","guest":"0","guest_nice":"0","idle":"265659","iowait":"374","irq":"0","nice":"19","softirq":"15","steal":"10","system":"2929","user":"4463"},"action":"added"}
+    {"name":"dns_resolvers","hostIdentifier":"osqueryclient","calendarTime":"Sat Nov 16 00:45:04 2019 UTC","unixTime":1573865104,"epoch":0,"counter":0,"logNumericsAsNumbers":false,"decorations":{"host_uuid":"95B2A9C0-785F-2B8A-EF22-ECFA7C04E745","username":"reboot"},"columns":{"address":"8.8.8.8","id":"0","netmask":"32","options":"524993","type":"nameserver"},"action":"added"}   
+    ```   
+
+Chuyển sang bước dưới để thực hiện các câu truy vấn cơ bản. 
+
+## 3. Hướng dẫn sử dụng các câu truy vấn cơ bản của osquery.
+
+- Thực hiện đăng nhập vào osquery với lệnh `osqueryi`, a sẽ ở màn hình nhắc lệnh.
+- Lưu ý: Để thoát màn hình sql của osquery, ta thực hiện phím `CTL +D`
