@@ -32,8 +32,8 @@ bash
 ```
 
 ```
-echo "127.0.0.1 localhost osqueryclient01" > /etc/hosts
 echo "192.168.80.142 osqueryclient01" >> /etc/hosts
+echo "127.0.0.1 localhost osqueryclient01" > /etc/hosts
 ```
 
 - Thiết lập IP
@@ -102,8 +102,9 @@ yum update -y && yum install yum-utils wget byobu unzip -y
     ```
 
     ```
-    echo "127.0.0.1 localhost KolideFleetSrv" > /etc/hosts
     echo "192.168.80.141 KolideFleetSrv" >> /etc/hosts
+        echo "127.0.0.1 localhost KolideFleetSrv" > /etc/hosts
+
     ```
 
 - Khởi động lại os 
@@ -405,9 +406,9 @@ byobu
 
 - Mở giao diện web của máy KolideFleetSrv ta sẽ thấy xuất hiện osquery client như hình ảnh dưới.
 
-![osqueryclient](https://image.prntscr.com/image/5uQy_SMwRnGHDyXTAVoA0w.png
-)
+![osqueryclient](https://image.prntscr.com/image/I4SK2nZGQzW9R7-8lKxKxw.png)
 
 Việc add thêm các client khác sẽ lặp lại tương tự như bước trên. 
 
 - Từ giao diện này ta có thể thực hiện các câu query. Sau hướng dẫn này các bạn sẽ chuyển sang các bước sử dụng giao diện của fleet.
+
