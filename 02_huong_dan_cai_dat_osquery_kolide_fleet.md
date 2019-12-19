@@ -381,7 +381,7 @@ mv 192.168.80.141_8080.pem /var/osquery/server.pem
 byobu
 ```
 
-- Kết nối osquery client với server fleet
+- Kết nối osquery client với server fleet bằng chế độ debug. Chế độ này cho phép ta quan sát trực tiếp các output khi osquery hoạt động. Lưu ý không được tắt màn hình lúc này nhé :).
 
 ```
 /usr/bin/osqueryd \
@@ -409,6 +409,39 @@ byobu
 ![osqueryclient](https://image.prntscr.com/image/I4SK2nZGQzW9R7-8lKxKxw.png)
 
 Việc add thêm các client khác sẽ lặp lại tương tự như bước trên. 
+
+Đối với chế độ debug thì khi tắt cửa sổ CLI đi, osqueryd sẽ không hoạt động. Để sử dụng chế độ chạy ngầm ta làm như sau.
+
+- Trước tiên, tam dừng hoát động của osqueryd bằng lệnh 
+	```
+	systemctl stop osqueryd
+	```
+
+Mở file `/etc/osquery/osquery.flags` và đưa nội dung file như bên dưới.
+	```
+	--enroll_secret_path=/var/osquery/enroll_secret
+	--tls_server_certs=/var/osquery/server.pem
+	--tls_hostname=192.168.80.141:8080
+	--host_identifier=hostname
+	--enroll_tls_endpoint=/api/v1/osquery/enroll
+	--config_plugin=tls
+	--config_tls_endpoint=/api/v1/osquery/config
+	--config_tls_refresh=10
+	--disable_distributed=false
+	--distributed_plugin=tls
+	--distributed_interval=3
+	--distributed_tls_max_attempts=3
+	--distributed_tls_read_endpoint=/api/v1/osquery/distributed/read
+	--distributed_tls_write_endpoint=/api/v1/osquery/distributed/write
+	--logger_plugin=tls
+	--logger_tls_endpoint=/api/v1/osquery/log
+	--logger_tls_period=10
+	```
+
+Sau đó save file này lại và khởi động lại `osqueryd`, khi đó osquery sẽ tự động kết nối tới fleet.
+	```
+	systemctl start osqueryd
+	```
 
 - Từ giao diện này ta có thể thực hiện các câu query. Sau hướng dẫn này các bạn sẽ chuyển sang các bước sử dụng giao diện của fleet.
 

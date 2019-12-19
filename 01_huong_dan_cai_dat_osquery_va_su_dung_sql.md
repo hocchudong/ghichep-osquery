@@ -213,4 +213,81 @@ Chuyển sang bước dưới để thực hiện các câu truy vấn cơ bản
 ## 3. Hướng dẫn sử dụng các câu truy vấn cơ bản của osquery.
 
 - Thực hiện đăng nhập vào osquery với lệnh `osqueryi`, a sẽ ở màn hình nhắc lệnh.
-- Lưu ý: Để thoát màn hình sql của osquery, ta thực hiện phím `CTL +D`
+- Lưu ý: Để thoát màn hình sql của osquery, ta thực hiện phím `CTL +D`.
+- Nếu bạn từng làm việc với các ngôn ngữ SQL của SQLite MySQL, MariaDB hoặc MS SQL ... thì việc thao thác này khá đơn giản, các kết quả sẽ là các giá trị của cột (colum) hoặc hàng (row) của các bảng (tables).
+- Schema (Cấu trúc các bảng) của osquery được mô tả tại đây: `https://osquery.io/schema/4.0.2`
+- Kết thúc các lệnh của sql là dấu `;`.
+
+Trong các ghi chép dưới đây, tôi sẽ hướng dẫn thao tác với một số bản cơ bản.
+
+### 3.1. Kiểm tra uptime của hệ thống
+
+- Sử dụng `select * from uptime;` để kiểm tra uptime của hệ thống, ta có kết quả
+    ```
+    osquery> select * from uptime;
+    +------+-------+---------+---------+---------------+
+    | days | hours | minutes | seconds | total_seconds |
+    +------+-------+---------+---------+---------------+
+    | 0    | 2     | 13      | 5       | 7985          |
+    +------+-------+---------+---------+---------------+
+    ```
+
+
+### 3.2. Bảng user
+
+- Kiểm tra danh sách các user trong hệ thống 
+
+
+```
+select * from users;
+```
+
+- Kết quả sẽ trả về danh sách các user
+
+![User](https://image.prntscr.com/image/koBjDnFBTtWlPPv2pu6YZQ.png)
+
+
+### 3.3. Bảng listening_ports
+
+- Sử dụng lệnh `select * from listening_ports limit 10;` để hiển thị 10 ports đang được mở 
+
+```
++-------+------+----------+--------+-----------+----+--------+-----------------------------+---------------+
+| pid   | port | protocol | family | address   | fd | socket | path                        | net_namespace |
++-------+------+----------+--------+-----------+----+--------+-----------------------------+---------------+
+| 10691 | 22   | 6        | 2      | 0.0.0.0   | 3  | 28612  |                             | 4026531956    |
+| 3441  | 25   | 6        | 2      | 127.0.0.1 | 13 | 24633  |                             | 4026531956    |
+| 10691 | 22   | 6        | 10     | ::        | 4  | 28614  |                             | 4026531956    |
+| 11321 | 323  | 17       | 2      | 127.0.0.1 | 5  | 30292  |                             | 4026531956    |
+| 11321 | 323  | 17       | 10     | ::1       | 6  | 30293  |                             | 4026531956    |
+| 1542  | 0    | 0        | 1      |           | 4  | 0      | /run/systemd/journal/socket | 4026531956    |
+| 1542  | 0    | 0        | 1      |           | 5  | 0      | /dev/log                    | 4026531956    |
+| 9499  | 0    | 0        | 1      |           | 7  | 0      | /root/.osquery/shell.em     | 4026531956    |
+| 9535  | 0    | 0        | 1      |           | 6  | 0      | public/pickup               | 4026531956    |
+| 3441  | 0    | 0        | 1      |           | 49 | 0      | private/proxymap            | 4026531956    |
++-------+------+----------+--------+-----------+----+--------+-----------------------------+---------------+
+```
+
+
+
+### 3.4. Bảng shell_history
+
+Sử dụng lệnh `select * from shell_history;` để hiển thị các lệnh được thực hiện bởi người dùng.
+
+```
++-----+------+----------------------------------+---------------------+
+| uid | time | command                          | history_file        |
++-----+------+----------------------------------+---------------------+
+| 0   | 0    | yum update -y                    | /root/.bash_history |
+| 0   | 0    | ip a                             | /root/.bash_history |
+| 0   | 0    | yum update -y                    | /root/.bash_history |
+| 0   | 0    | hostnamectl set-hostname c7srv04 | /root/.bash_history |
+| 0   | 0    | ip a                             | /root/.bash_history |
+| 0   | 0    | hostnamectl set-hostname c7srv04 | /root/.bash_history |
+| 0   | 0    | vi /etc/hosts                    | /root/.bash_history |
+| 0   | 0    | ip a                             | /root/.bash_history |
+| 0   | 0    | yum update -y                    | /root/.bash_history |
+| 0   | 0    | ip a                             | /root/.bash_history |
++-----+------+----------------------------------+---------------------+
+```
+
