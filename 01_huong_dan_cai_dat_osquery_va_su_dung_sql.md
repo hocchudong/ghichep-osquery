@@ -291,3 +291,16 @@ Sử dụng lệnh `select * from shell_history;` để hiển thị các lệnh
 +-----+------+----------------------------------+---------------------+
 ```
 
+### 3.5 Kết hợp bảng user và bảng shell_history 
+
+Ta có thể join các bảng lại để cho ra một kết quả như ý, trong hướng dẫn này sẽ sử dụng bảng `shell_history` và bảng `user` để cho biết các lệnh được thực hiện bởi user nào. Cú pháp sẽ như sau:
+
+```
+SELECT * FROM shell_history WHERE shell_history.uid IN (SELECT uid FROM users);
+```
+
+Ta sẽ có kết quả tương tự như bên dưới nếu có nhiều user thực hiện các lệnh
+
+```
+
+```
