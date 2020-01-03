@@ -1,4 +1,4 @@
-# Hướng dẫn cài đặt osquery và sử dụng các câu truy vấn.
+# Hướng dẫn cài đặt osquery trên linux
 
 ## 1. Giới thiệu
 - osquery là giải pháp nguồn mở do facebook phát triển, osquery có chức nnăg thu thập các thông tin phần cứng theo cơ chế của ngôn ngữ truy vấn. Tức là để hiển thị các dữ liệu mong muốn, người sử dụng (system admin hoặc dev hoặc người dùng thông thường) sẽ sử dụng các câu truy vấn theo ngôn ngữ SQL để làm việc.
@@ -289,5 +289,51 @@ Sử dụng lệnh `select * from shell_history;` để hiển thị các lệnh
 | 0   | 0    | yum update -y                    | /root/.bash_history |
 | 0   | 0    | ip a                             | /root/.bash_history |
 +-----+------+----------------------------------+---------------------+
+```
+
+### 3.5 Kết hợp bảng user và bảng shell_history 
+
+Ta có thể join các bảng lại để cho ra một kết quả như ý, trong hướng dẫn này sẽ sử dụng bảng `shell_history` và bảng `user` để cho biết các lệnh được thực hiện bởi user nào. Cú pháp sẽ như sau:
+
+```
+SELECT * FROM shell_history WHERE shell_history.uid IN (SELECT uid FROM users);
+```
+
+Ta sẽ có kết quả tương tự như bên dưới nếu có nhiều user thực hiện các lệnh
+
+```
++------+------+-----------------------------------------------------------------------------------+----------------------------+
+| uid  | time | command                                                                           | history_file               |
++------+------+-----------------------------------------------------------------------------------+----------------------------+
+| 0    | 0    | ip a                                                                              | /root/.bash_history        |
+| 11   | 0    | timedatectl                                                                       | /root/.bash_history        |
+| 11   | 0    | vi /etc/chrony.conf                                                               | /root/.bash_history        |
+| 11   | 0    | systemctl restart chronyd                                                         | /root/.bash_history        |
+| 11   | 0    | chronyc sources                                                                   | /root/.bash_history        |
+| 11   | 0    | timedatectl                                                                       | /root/.bash_history        |
+| 11   | 0    | timedatectl set-local-rtc 0                                                       | /root/.bash_history        |
+| 11   | 0    | ip a                                                                              | /root/.bash_history        |
+| 11   | 0    | cat osqueryd.INFO                                                                 | /root/.bash_history        |
+| 11   | 0    | tailf  osqueryd.INFO                                                              | /root/.bash_history        |
+| 11   | 0    | ll -tr                                                                            | /root/.bash_history        |
+| 11   | 0    | cat osqueryd.                                                                     | /root/.bash_history        |
+| 11   | 0    | cat osqueryd.INFO                                                                 | /root/.bash_history        |
+| 11   | 0    | tailf /var/log/osquery/osqueryd.results.log                                       | /root/.bash_history        |
+| 11   | 0    | cat  /var/log/osquery/osqueryd.results.log                                        | /root/.bash_history        |
+| 11   | 0    | adduser congto                                                                    | /root/.bash_history        |
+| 11   | 0    | passwd congto                                                                     | /root/.bash_history        |
+| 11   | 0    | su - congto                                                                       | /root/.bash_history        |
+| 11   | 0    | vi /etc/osquery/osquery.conf                                                      | /root/.bash_history        |
+| 1000 | 0    | ping dantri.com                                                                   | /home/congto/.bash_history |
+| 1000 | 0    | hostname                                                                          | /home/congto/.bash_history |
+| 1000 | 0    | ls -alh                                                                           | /home/congto/.bash_history |
+| 1000 | 0    | cat .bashrc                                                                       | /home/congto/.bash_history |
+| 1000 | 0    | exit                                                                              | /home/congto/.bash_history |
+| 1000 | 0    | osqueryi                                                                          | /home/congto/.bash_history |
+| 1000 | 0    | ll -tr /var/log/osquery/                                                          | /home/congto/.bash_history |
+| 1000 | 0    | ping hocchudong.com                                                               | /home/congto/.bash_history |
+| 1000 | 0    | exit                                                                              | /home/congto/.bash_history |
++------+------+-----------------------------------------------------------------------------------+----------------------------+
+
 ```
 
