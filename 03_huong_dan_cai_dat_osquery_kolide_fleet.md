@@ -417,7 +417,7 @@ Việc add thêm các client khác sẽ lặp lại tương tự như bước tr
 	systemctl stop osqueryd
 	```
 
-Mở file `/etc/osquery/osquery.flags` và đưa nội dung file như bên dưới.
+- Mở file `/etc/osquery/osquery.flags` và đưa nội dung file như bên dưới.
 	```
 	--enroll_secret_path=/var/osquery/enroll_secret
 	--tls_server_certs=/var/osquery/server.pem
@@ -438,7 +438,7 @@ Mở file `/etc/osquery/osquery.flags` và đưa nội dung file như bên dư�
 	--logger_tls_period=10
 	```
 
-Sau đó save file này lại và khởi động lại `osqueryd`, khi đó osquery sẽ tự động kết nối tới fleet.
+- Sau đó save file này lại và khởi động lại `osqueryd`, khi đó osquery sẽ tự động kết nối tới fleet.
 	```
 	systemctl start osqueryd
 	```
